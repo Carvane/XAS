@@ -1,4 +1,5 @@
-
+from xdk import Client
+from xdk.oauth1_auth import OAuth1
 
 class Agent:
     def __init__(
@@ -8,10 +9,17 @@ class Agent:
         AccessToken,
         AccessTokenSecret
     ):
-        self.__ConsumerKey = ConsumerKey
-        self.__ConsumerKeySecret = ConsumerKeySecret
-        self.__AccessToken = AccessToken
-        self.__AccessTokenSecret = AccessTokenSecret
+        self.__auth = OAuth1(
+            api_key=ConsumerKey,
+            api_secret=ConsumerKeySecret,
+            callback="http://localhost:8080/callback",
+            access_token=AccessToken,
+            access_token_secret=AccessTokenSecret
+        )
+        self.__client = Client(auth=self.__auth)
 
-    def getPost(self):
-        print("test")
+    def getLatest(self):
+        pass
+
+    def getHighestRated(self):
+        pass

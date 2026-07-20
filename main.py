@@ -13,7 +13,7 @@ def main():
         AccessToken=os.getenv("ACCESS_TOKEN"),
         AccessTokenSecret=os.getenv("ACCESS_TOKEN_SECRET")
     )
-    xas.getPost()
+
 
 
 if __name__ == "__main__":
