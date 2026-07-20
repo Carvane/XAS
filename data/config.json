@@ -2,27 +2,31 @@
     {
         "autoAddPost": {
             "value": 0,
-            "_comment": "Hello World!"
+            "_comment": "(0/1) Automatically publish the generated post without requiring manual approval."
         },
         "autoGenerate": {
             "value": 0,
-            "_comment": "Hello World!"
+            "_comment": "(0/1-x) Automatically search for and generate posts. 0 disables the feature, while x defines the interval in minutes. When enabled, autoAddPost is ignored."
         },
         "autoGenerateOption": {
             "value": 0,
-            "_comment": "Hello World!"
+            "_comment": "(0/1/...) Select the post generation method: 0 = latest post, 1 = highest-rated post. More options may be added later."
         },
         "minRating": {
             "value": 0,
-            "_comment": "Hello World!"
+            "_comment": "(0-x) Minimum required post rating. Posts with a lower rating will be skipped."
         },
-        "MaxTime": {
+        "maxTime": {
             "value": 0,
-            "_comment": "Hello World!"
+            "_comment": "(0-x) Maximum post age in hours. Older posts will be skipped. 0 disables the age limit."
         },
         "generateImage": {
             "value": 0,
-            "_comment": "Hello World!"
+            "_comment": "(0/1/2) Image generation mode: 0 = disabled, 1 = generate from the original post image, 2 = generate from the AI-generated post content."
+        },
+        "copyImage": {
+            "value": 0,
+            "_comment": "(0/1) Copy the image from the original scraped post."
         }
     }
 ]
