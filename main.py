@@ -3,7 +3,7 @@ from view import menu, menu_option, clear
 
 
 def main():
-    pass
+    menu()
 
 if __name__ == "__main__":
     main()
