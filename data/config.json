@@ -1,1 +1,28 @@
-[]
+[
+    {
+        "autoAddPost": {
+            "value": 0,
+            "_comment": "Hello World!"
+        },
+        "autoGenerate": {
+            "value": 0,
+            "_comment": "Hello World!"
+        },
+        "autoGenerateOption": {
+            "value": 0,
+            "_comment": "Hello World!"
+        },
+        "minRating": {
+            "value": 0,
+            "_comment": "Hello World!"
+        },
+        "MaxTime": {
+            "value": 0,
+            "_comment": "Hello World!"
+        },
+        "generateImage": {
+            "value": 0,
+            "_comment": "Hello World!"
+        }
+    }
+]
