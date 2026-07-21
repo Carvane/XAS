@@ -13,6 +13,8 @@ def main():
         AccessToken=os.getenv("ACCESS_TOKEN"),
         AccessTokenSecret=os.getenv("ACCESS_TOKEN_SECRET")
     )
+    """ x = xas.getLatest(["solana", "pumpfun"])
+    print(x) """
     #print(xas.postCreate("test"))
 
 
