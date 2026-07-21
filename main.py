@@ -13,6 +13,7 @@ def main():
         AccessToken=os.getenv("ACCESS_TOKEN"),
         AccessTokenSecret=os.getenv("ACCESS_TOKEN_SECRET")
     )
+    #print(xas.postCreate("test"))
 
 
 

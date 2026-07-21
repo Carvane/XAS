@@ -1,13 +1,14 @@
 from xdk import Client
 from xdk.oauth1_auth import OAuth1
+from xdk.posts.models import CreateRequest
 
-class Agent:
+class Agent():
     def __init__(
         self,
-        ConsumerKey,
-        ConsumerKeySecret,
-        AccessToken,
-        AccessTokenSecret
+        ConsumerKey: str,
+        ConsumerKeySecret: str,
+        AccessToken: str,
+        AccessTokenSecret: str
     ):
         self.__auth = OAuth1(
             api_key=ConsumerKey,
@@ -23,3 +24,12 @@ class Agent:
 
     def getHighestRated(self):
         pass
+
+    def postCreate(
+            self,
+            message: str
+        ):
+        response = self.__client.posts.create(
+            body=CreateRequest(text=message)
+        )
+        return response
