@@ -7,7 +7,9 @@ def menu(_clear=1):
     print("XAS generates a post based on accounts from LIST_1")
     print("Choose an option:\n")
     print("[1] Latest")
-    print("[2] Highest-rated")
+    print("[2] Highest-rated\n")
+    print("[0] EXIT")
+
 
 def menu_option(value: int):
     pass
