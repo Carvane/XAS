@@ -9,6 +9,7 @@ from view import menu, menu_option, clear
 
 def main():
     PATH_ACC = "data/acc.json"
+    LIST_NAME = "LIST_1"
     
     load_dotenv()
     
@@ -29,14 +30,19 @@ def main():
             case 0:
                 break
             case 1:
-                menuLatest(xas)
+                menuLatest(xas, PATH_ACC, LIST_NAME)
             case 2:
-                menuBestRating(xas)
+                menuBestRating(xas, PATH_ACC, LIST_NAME)
             case _:
                 pass
 
-def menuLatest(obj: Agent):
-    pass
+def menuLatest(obj: Agent, path: str, listName: str):
+    with open(path) as file:
+        lists = json.load(file)
+    response = obj.getLatest(lists[listName])
+
+    print(f"\n{response["mess"]}\n")
+    input("Press ENTER to continue")
 
 def menuBestRating(obj: Agent):
     pass
