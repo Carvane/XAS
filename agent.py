@@ -2,15 +2,35 @@ from xdk import Client
 from xdk.oauth1_auth import OAuth1
 from xdk.posts.models import CreateRequest
 
+from openai import OpenAI
+
 from typing import List, Dict, Optional
 
-class Agent():
+class AI():
+    def __init__(
+        self,
+        OpenaiSecretKey
+    ):
+        self.__clientAI = OpenAI(api_key=OpenaiSecretKey)
+    def generateResponse(self, prompt: str):
+        response = self.__clientAI.responses.create(
+            model="gpt-5.4-nano",
+            tools=[{"type": "web_search"}],
+            instructions="",
+            input=prompt,
+#            conversation=???
+        )
+        return response
+        
+
+class Agent(AI):
     def __init__(
         self,
         ConsumerKey: str,
         ConsumerKeySecret: str,
         AccessToken: str,
-        AccessTokenSecret: str
+        AccessTokenSecret: str,
+        OpenaiSecretKey: str
     ):
         self.__auth = OAuth1(
             api_key=ConsumerKey,
@@ -20,6 +40,7 @@ class Agent():
             access_token_secret=AccessTokenSecret
         )
         self.__client = Client(auth=self.__auth)
+        super().__init__(OpenaiSecretKey)
 
     def getLatest(self, users: List[str]) -> Optional[Dict]:
         if not users:

@@ -17,7 +17,8 @@ def main():
         ConsumerKey=os.getenv("CONSUMER_KEY"),
         ConsumerKeySecret=os.getenv("CONSUMER_KEY_SECRET"),
         AccessToken=os.getenv("ACCESS_TOKEN"),
-        AccessTokenSecret=os.getenv("ACCESS_TOKEN_SECRET")
+        AccessTokenSecret=os.getenv("ACCESS_TOKEN_SECRET"),
+        OpenaiSecretKey=os.getenv("ACCESS_TOKEN_SECRET")
     )
     while True:
         menu()
