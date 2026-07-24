@@ -12,6 +12,8 @@ class AI():
         OpenaiSecretKey
     ):
         self.__clientAI = OpenAI(api_key=OpenaiSecretKey)
+        self.conversationId = None
+    
     def generateResponse(self, prompt: str):
         response = self.__clientAI.responses.create(
             model="gpt-5.4-nano",
@@ -20,17 +22,19 @@ class AI():
             input=prompt,
 #            conversation=???
         )
-        return response
+        return response.output_text
+    
+    def newConversation(self):
+        self.conversationId = self.__clientAI.conversations.create()
+        return self.conversationId
         
-
-class Agent(AI):
+class Twitter():
     def __init__(
         self,
         ConsumerKey: str,
         ConsumerKeySecret: str,
         AccessToken: str,
         AccessTokenSecret: str,
-        OpenaiSecretKey: str
     ):
         self.__auth = OAuth1(
             api_key=ConsumerKey,
@@ -39,9 +43,7 @@ class Agent(AI):
             access_token=AccessToken,
             access_token_secret=AccessTokenSecret
         )
-        self.__client = Client(auth=self.__auth)
-        super().__init__(OpenaiSecretKey)
-
+        self.__clientTwitter = Client(auth=self.__auth)
     def getLatest(self, users: List[str]) -> Optional[Dict]:
         if not users:
             return None
@@ -51,7 +53,7 @@ class Agent(AI):
             "-is:retweet -is:reply -is:quote"
         )
 
-        for page in self.__client.posts.search_recent(
+        for page in self.__clientTwitter.posts.search_recent(
             query=query,
             max_results=10,
             tweet_fields=["author_id", "created_at"],
@@ -99,7 +101,19 @@ class Agent(AI):
             self,
             message: str
         ):
-        response = self.__client.posts.create(
+        response = self.__clientTwitter.posts.create(
             body=CreateRequest(text=message)
         )
         return response
+
+class Agent(AI, Twitter):
+    def __init__(
+        self,
+        ConsumerKey: str,
+        ConsumerKeySecret: str,
+        AccessToken: str,
+        AccessTokenSecret: str,
+        OpenaiSecretKey: str
+    ):
+        AI.__init__(self, OpenaiSecretKey)
+        Twitter.__init__(self, ConsumerKey, ConsumerKeySecret, AccessToken, AccessTokenSecret)

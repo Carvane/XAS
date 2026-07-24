@@ -18,7 +18,7 @@ def main():
         ConsumerKeySecret=os.getenv("CONSUMER_KEY_SECRET"),
         AccessToken=os.getenv("ACCESS_TOKEN"),
         AccessTokenSecret=os.getenv("ACCESS_TOKEN_SECRET"),
-        OpenaiSecretKey=os.getenv("ACCESS_TOKEN_SECRET")
+        OpenaiSecretKey=os.getenv("OPENAI_SECRET_KEY")
     )
     while True:
         menu()
@@ -31,7 +31,10 @@ def main():
             case 0:
                 break
             case 1:
-                menuLatest(xas, PATH_ACC, LIST_NAME)
+                #menuLatest(xas, PATH_ACC, LIST_NAME)
+                x = xas.generateResponse("test ;d")
+                print(x)
+                input("")
             case 2:
                 menuBestRating(xas, PATH_ACC, LIST_NAME)
             case _:
@@ -41,8 +44,9 @@ def menuLatest(obj: Agent, path: str, listName: str):
     with open(path) as file:
         lists = json.load(file)
     response = obj.getLatest(lists[listName])
+    response = response["mess"]
 
-    print(f"\n{response["mess"]}\n")
+    print(f"\n{response}\n")
     input("Press ENTER to continue")
 
 def menuBestRating(obj: Agent):
