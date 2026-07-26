@@ -1,2 +1,3 @@
-# XAS
-AI agent that collects data from selected X accounts and generates original posts.
+# XAA (X Auto Agent)
+
+AI agent that discovers, scores and transforms fresh X posts into original content.
