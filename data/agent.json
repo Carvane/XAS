@@ -1,0 +1,20 @@
+{
+    "testowy": {
+        "config": {
+            "model": null,
+            "instruction": null,
+            "enablePosting": null,
+            "imageGeneration": null,
+            "conversationId": null,
+            "searchOptions": {
+                "algorithm": null,
+                "maxPostAgeHours": null,
+                "minElo": null,
+                "calculateEloVersion": null,
+                "monitoredAccounts": "ma/testowy.json",
+                "processedPostIds": "psi/testowy.json"
+            }
+        },
+        "secret": "secret/testowy.json"
+    }
+}
