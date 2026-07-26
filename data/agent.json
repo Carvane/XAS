@@ -7,7 +7,7 @@
             "imageGeneration": null,
             "conversationId": null,
             "searchOptions": {
-                "algorithm": null,
+                "algorithm": "latest",
                 "maxPostAgeHours": null,
                 "minElo": null,
                 "calculateEloVersion": null,
