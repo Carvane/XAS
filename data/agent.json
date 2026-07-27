@@ -15,6 +15,6 @@
                 "processedPostIds": "psi/testowy.json"
             }
         },
-        "secret": "secret/testowy.json"
+        "secret": ".secret/testowy.json"
     }
 }

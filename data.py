@@ -93,6 +93,13 @@ def updateAgent(
         else:
             print(f'Agent "{nameAgent}" does not exist.')
 
+def getAgents(PATH: str):
+    with open(PATH, "r", encoding="utf-8") as file:
+        agents = json.load(file)
+
+    return agents
+    
+
 
 #createAgent("testowy")
 updateAgent(nameAgent="testowy", algorithm="latest")
