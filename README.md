@@ -1,4 +1,4 @@
-# XAA — X Auto Agent
+# XAA (X Auto Agent)
 
 XAA is a Python agent that researches current internet trends, writes an English meme caption,
 creates an original meme around a supplied character reference, and can publish the result to X.
@@ -50,7 +50,7 @@ on your API tier, billing status, region, and provider policies.
 ## Quick start
 
 ```bash
-git clone https://github.com/YOUR_ACCOUNT/XAA.git
+git clone https://github.com/Carvane/XAA.git
 cd XAA
 python install.py
 ```
