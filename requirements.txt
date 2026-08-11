@@ -1,0 +1,4 @@
+openai==2.53.0
+tweepy==4.17.0
+Pillow==12.3.0
+tzdata>=2025.2,<2027

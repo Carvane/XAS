@@ -1,0 +1,61 @@
+{
+  "openai": {
+    "api_key": "PASTE_OPENAI_API_KEY_HERE",
+    "text_model": "gpt-5.6",
+    "image_model": "gpt-image-2",
+    "conversation_id": "",
+    "allowed_domains": [],
+    "blocked_domains": []
+  },
+  "x": {
+    "api_key": "PASTE_X_API_KEY_HERE",
+    "api_secret": "PASTE_X_API_SECRET_HERE",
+    "access_token": "PASTE_X_ACCESS_TOKEN_HERE",
+    "access_token_secret": "PASTE_X_ACCESS_TOKEN_SECRET_HERE"
+  },
+  "brand": {
+    "coin_name": "YOUR_COIN_NAME",
+    "ticker": "$YOUR_TICKER",
+    "description": "One-sentence description of the memecoin, its mascot and its community joke.",
+    "contract_address": "",
+    "website": "",
+    "x_handle": "@YOUR_X_HANDLE",
+    "tone": "fast, witty, internet-native, self-aware degen humor; never corporate or desperate",
+    "call_to_action": "",
+    "forbidden_topics": [
+      "death and tragedy",
+      "war",
+      "politics",
+      "financial return promises"
+    ]
+  },
+  "generation": {
+    "logo_path": "logo.png",
+    "output_dir": "output",
+    "history_file": "data/history.json",
+    "timezone": "Europe/Warsaw",
+    "post_language": "English",
+    "max_post_chars": 260,
+    "trend_window_hours": 72,
+    "trend_sources": [
+      "TikTok and TikTok trend reporting",
+      "X",
+      "Reddit",
+      "YouTube",
+      "Google Trends",
+      "current meme and culture reporting",
+      "crypto culture"
+    ],
+    "image_size": "1536x1024",
+    "image_quality": "medium",
+    "max_upload_mb": 4.8,
+    "duplicate_lookback": 30,
+    "generation_attempts": 3
+  },
+  "publishing": {
+    "enabled": true,
+    "dry_run": false,
+    "min_hours_between_posts": 6,
+    "add_alt_text": true
+  }
+}
