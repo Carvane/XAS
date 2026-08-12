@@ -3,11 +3,7 @@
 XAA is a Python agent that researches current internet trends, writes an English meme caption,
 creates an original meme around a supplied character reference, and can publish the result to X.
 
-<<<<<<< HEAD
 The image in `logo.png` is treated as the character itself, not as a watermark. XAA instructs the
-=======
-The image in `logo.png` is treated as the character itself. XAA instructs the
->>>>>>> 1219efe154318029074c240cb09a42ef0126e2aa
 image model to preserve the face, outfit, proportions, palette, and mixed photomontage style while
 changing only the pose, placement, lighting, shadows, and scene interaction required by the joke.
 
