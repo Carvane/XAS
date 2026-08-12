@@ -3,7 +3,7 @@
 XAA is a Python agent that researches current internet trends, writes an English meme caption,
 creates an original meme around a supplied character reference, and can publish the result to X.
 
-The image in `logo.png` is treated as the character itself—not as a watermark. XAA instructs the
+The image in `logo.png` is treated as the character itself, not as a watermark. XAA instructs the
 image model to preserve the face, outfit, proportions, palette, and mixed photomontage style while
 changing only the pose, placement, lighting, shadows, and scene interaction required by the joke.
 
@@ -33,8 +33,9 @@ changing only the pose, placement, lighting, shadows, and scene interaction requ
 5. The final image is compressed to JPEG and saved with the generation metadata.
 6. In publish mode, Tweepy uploads the media and creates the X post.
 
-XAA performs one generation/publish cycle per invocation. It is not a background daemon or a
-scheduler.
+XAA performs one generation and publication cycle per `start.py` invocation. The optional
+`auto.py` scheduler can run that cycle repeatedly after a fixed delay plus a randomized number of
+minutes.
 
 ## Requirements
 
@@ -133,8 +134,84 @@ wording and subject matter are not embedded in the program.
 | `python start.py --debug` | Print full tracebacks for failures. |
 | `python start.py --test` | Run the unit test suite. |
 | `python main.py --version` | Print the XAA version. |
+| `python3 -u auto.py` | Run XAA repeatedly using the automatic scheduler. |
 
 `--dry-run` still calls OpenAI and can incur API costs. `--check` is the no-API validation command.
+
+## Automatic scheduling on Linux
+
+`auto.py` can publish repeatedly without requiring cron or another Python package. Configure the
+schedule near the top of the file:
+
+```python
+BASE_INTERVAL_HOURS = 2
+RANDOM_MINUTES_MIN = 1
+RANDOM_MINUTES_MAX = 60
+BYPASS_XAA_COOLDOWN = True
+```
+
+With the example above, each cycle waits for 2 hours plus a random delay between 1 and 60 minutes.
+The first cycle also waits, so starting `auto.py` does not publish immediately.
+
+The scheduler works as follows:
+
+1. Select a random number of minutes from the configured range.
+2. Wait for the base interval plus the selected random delay.
+3. Run `start.py` and wait until generation and publication finish.
+4. Select a new random delay and repeat the cycle.
+
+When `BYPASS_XAA_COOLDOWN` is `True`, `auto.py` runs `start.py --force`. This makes the scheduler's
+interval authoritative and prevents `publishing.min_hours_between_posts` in `config.json` from
+blocking the planned run. Set it to `False` if the normal XAA cooldown should remain active.
+
+Start the scheduler in the foreground with:
+
+```bash
+cd ~/XAA
+python3 -u auto.py
+```
+
+The `-u` option keeps log output unbuffered, so status messages appear immediately. The scheduler
+prints the selected delay, the exact planned run time and the exit code returned by `start.py`.
+Press `Ctrl+C` to stop it safely.
+
+### Keep the scheduler running with screen
+
+Install `screen` if it is not already available:
+
+```bash
+sudo apt update
+sudo apt install -y screen
+```
+
+Create a named session and start XAA:
+
+```bash
+cd ~/XAA
+screen -S xaa
+python3 -u auto.py
+```
+
+Detach from the session without stopping XAA by pressing `Ctrl+A`, releasing the keys, and then
+pressing `D`.
+
+List running sessions:
+
+```bash
+screen -ls
+```
+
+Return to the scheduler:
+
+```bash
+screen -r xaa
+```
+
+To stop it, return to the session and press `Ctrl+C`.
+
+`screen` keeps XAA running after the SSH connection closes, but it does not automatically restart
+the scheduler after a VPS reboot. Use a `systemd` service if automatic startup after reboot is
+required.
 
 ## Files created at runtime
 
