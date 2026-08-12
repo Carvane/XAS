@@ -52,7 +52,7 @@ The default models are:
 
 XAA uses Responses API web search and Conversations API state. Leave `conversation_id` empty on
 the first run. XAA creates a conversation and writes its ID back to `config.json` automatically.
-Keep that ID to preserve context between runs. Delete only the value—not the field—if you want XAA
+Keep that ID to preserve context between runs. Delete only the value, not the field, if you want XAA
 to start a fresh conversation.
 
 OpenAI API access is separate from a ChatGPT subscription. Your account must have access and
@@ -161,7 +161,7 @@ simplify the action.
 | `image_quality` | `medium` | Image-model quality setting. |
 | `max_upload_mb` | `4.8` | Local JPEG compression target. |
 | `duplicate_lookback` | `30` | Published history entries checked for repetition. |
-| `generation_attempts` | `3` | Attempts to find a sufficiently different trend; 1–5. |
+| `generation_attempts` | `3` | Attempts to find a sufficiently different trend; 1 to 5. |
 
 XAA does not connect to a private TikTok API. It uses OpenAI web search to find public, current
 reporting and pages associated with sources listed in `trend_sources`. Availability and recency
@@ -220,6 +220,99 @@ python start.py
 XAA uploads the JPEG, applies alt text when enabled, creates the post, records the response IDs,
 and prints the post URL.
 
+## 12. Configure automatic publishing on Linux
+
+The optional `auto.py` scheduler can run `start.py` repeatedly without cron or an additional
+Python package. It waits before every run, including the first one.
+
+Configure these values near the top of `auto.py`:
+
+```python
+BASE_INTERVAL_HOURS = 2
+RANDOM_MINUTES_MIN = 1
+RANDOM_MINUTES_MAX = 60
+BYPASS_XAA_COOLDOWN = True
+```
+
+With these settings, XAA waits for 2 hours plus a randomly selected delay from 1 to 60 minutes.
+The total delay before each publication is therefore between 2 hours 1 minute and 3 hours.
+
+Each scheduler cycle works as follows:
+
+1. Select a random number of minutes from the configured range.
+2. Print the delay and exact planned run time.
+3. Wait for the complete delay.
+4. Run `start.py` and wait until it finishes.
+5. Print the exit code, select a new delay and repeat.
+
+`RANDOM_MINUTES_MIN` may be set to `0`. `RANDOM_MINUTES_MAX` must be equal to or greater than the
+minimum. `BASE_INTERVAL_HOURS` and both minute values must not be negative.
+
+When `BYPASS_XAA_COOLDOWN` is `True`, the scheduler runs:
+
+```bash
+python start.py --force
+```
+
+This prevents `publishing.min_hours_between_posts` from blocking the interval explicitly selected
+in `auto.py`. The flag bypasses only the cooldown. It does not override `enabled: false` or
+`dry_run: true` in `config.json`.
+
+Set `BYPASS_XAA_COOLDOWN` to `False` if the normal cooldown from `config.json` should remain in
+effect. In that case, make sure `min_hours_between_posts` is not longer than the intended schedule,
+or XAA may skip a planned publication.
+
+Start the scheduler in the foreground:
+
+```bash
+cd ~/XAA
+python3 -u auto.py
+```
+
+The `-u` option keeps terminal output unbuffered. The selected delay, next run time and process
+result appear immediately. Press `Ctrl+C` to stop the scheduler safely.
+
+### Keep XAA running after closing SSH
+
+Install `screen` if needed:
+
+```bash
+sudo apt update
+sudo apt install -y screen
+```
+
+Create a named session and start the scheduler:
+
+```bash
+cd ~/XAA
+screen -S xaa
+python3 -u auto.py
+```
+
+Detach without stopping XAA:
+
+1. Press `Ctrl+A`.
+2. Release the keys.
+3. Press `D`.
+
+List active sessions:
+
+```bash
+screen -ls
+```
+
+Return to the XAA session:
+
+```bash
+screen -r xaa
+```
+
+To stop automatic publishing, return to the session and press `Ctrl+C`.
+
+`screen` keeps the scheduler running when the SSH connection closes. It does not restart XAA after
+a VPS reboot. Configure a `systemd` service separately if automatic startup after reboot is
+required.
+
 ## Output and history
 
 Each generation creates a unique timestamped directory under `output/`. The untouched image-model
@@ -267,6 +360,23 @@ plan that supports publishing and media upload.
 Only one process may use a history file at once. Wait for the active process. If a process crashed,
 the `.xaa.lock` file is considered stale after six hours and is removed automatically.
 
+### `auto.py` starts but does not publish
+
+Check `publishing.enabled` and `publishing.dry_run` in `config.json`. Also check the terminal log for
+the exit code returned by `start.py`. If `BYPASS_XAA_COOLDOWN` is `False`, the configured cooldown
+may intentionally skip the run.
+
+### `auto.py` stops after closing SSH
+
+Run it inside `screen`, detach with `Ctrl+A` followed by `D`, and confirm the session with
+`screen -ls`. Closing the terminal without `screen`, `systemd`, or another process manager stops the
+program.
+
+### The scheduler did not restart after a VPS reboot
+
+This is expected when using only `screen`. Start a new session manually after the reboot or create
+a `systemd` service for automatic startup.
+
 ### The meme changes the character too much
 
 Use a cleaner, larger reference and simplify the requested action. Strengthen the relevant wording
@@ -296,5 +406,5 @@ Back up `config.json`, `logo.png`, and any runtime history you want to retain. R
 files, run `python install.py` to refresh dependencies, then run `--check` and `--dry-run` before
 publishing again.
 
-The v1.0.0 configuration structure is compatible with the configuration produced by the final
-pre-release build of this project; no new required field was added during the XAA rename.
+The automatic scheduler does not add any required field to `config.json`. Existing v1.0.0
+configurations remain compatible with the scheduler update.

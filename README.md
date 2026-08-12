@@ -258,10 +258,3 @@ returns, fabricated endorsements, fake scarcity, impersonation, invented statist
 exploitation of tragedy. Generated output can still be wrong or inappropriate. You are responsible
 for fact-checking, complying with applicable law and platform rules, respecting intellectual
 property, and deciding what your account publishes.
-
-## Release
-
-See [CHANGELOG.md](CHANGELOG.md) and [RELEASE_NOTES.md](RELEASE_NOTES.md) for version 1.0.0.
-
-No software license is included in this release. Add an appropriate license before inviting third
-parties to use, modify, or redistribute the project.

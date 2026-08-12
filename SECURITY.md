@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Security fixes are currently provided for the latest `1.0.x` release.
+Security fixes are currently provided for the latest `1.1.x` release.
 
 ## Reporting a vulnerability
 
