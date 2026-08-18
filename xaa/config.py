@@ -23,7 +23,7 @@ PLACEHOLDER_MARKERS = (
 @dataclass(slots=True)
 class OpenAIConfig:
     api_key: str = field(repr=False)
-    text_model: str = "gpt-5.6"
+    text_model: str = "gpt-5.6-luna"
     image_model: str = "gpt-image-2"
     conversation_id: str = ""
     allowed_domains: list[str] = field(default_factory=list)

@@ -9,7 +9,11 @@ from PIL import Image
 
 from xaa.core import ContentPlan, clamp_post, format_two_block_post, is_duplicate
 from xaa.image_tools import prepare_final_image
-from xaa.openai_service import ANTI_AI_SLOP_INSTRUCTIONS, CHARACTER_LOCK_INSTRUCTIONS
+from xaa.openai_service import (
+    ANTI_AI_SLOP_INSTRUCTIONS,
+    CHARACTER_LOCK_INSTRUCTIONS,
+    POST_STYLE_INSTRUCTIONS,
+)
 
 
 def plan(title: str, post: str) -> ContentPlan:
@@ -38,6 +42,15 @@ class CoreTests(unittest.TestCase):
         self.assertIn("ordinary found photograph", rules)
         self.assertIn("avoid cinematic lighting", rules)
         self.assertIn("slightly raw and believable", rules)
+        self.assertIn("dirty beige apartment", rules)
+        self.assertIn("rotate camera treatments", rules)
+
+    def test_post_style_requires_varied_discovery_anchors(self) -> None:
+        rules = POST_STYLE_INSTRUCTIONS.lower()
+        self.assertIn("instantly understandable", rules)
+        self.assertIn("solana", rules)
+        self.assertIn("open source", rules)
+        self.assertIn("zero or one relevant hashtag", rules)
 
     def test_clamp_post_keeps_short_text(self) -> None:
         self.assertEqual(clamp_post("hello   world", 20), "hello world")
@@ -83,6 +96,26 @@ class CoreTests(unittest.TestCase):
     def test_different_plan_is_not_duplicate(self) -> None:
         candidate = plan("New dance format", "The trenches finally learned choreography")
         history = [{"trend_title": "Phone fold meme", "post_text": "wallet folded first"}]
+        self.assertFalse(is_duplicate(candidate, history))
+
+    def test_recent_overused_motif_is_detected(self) -> None:
+        candidate = plan("A new current format", "another bad bag\n\nHamsty is ready")
+        history = [
+            {
+                "trend_title": "Different old trend",
+                "post_text": "the bad bag has excellent community management",
+            }
+        ]
+        self.assertTrue(is_duplicate(candidate, history))
+
+    def test_motif_matching_does_not_treat_struggle_as_rug(self) -> None:
+        candidate = plan("A new current format", "the struggle continues\n\nHamsty logged in")
+        history = [
+            {
+                "trend_title": "Different old trend",
+                "post_text": "the rug was faster than the roadmap",
+            }
+        ]
         self.assertFalse(is_duplicate(candidate, history))
 
     def test_final_image_compression_creates_small_jpeg(self) -> None:

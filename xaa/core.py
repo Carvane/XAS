@@ -6,6 +6,17 @@ from difflib import SequenceMatcher
 from typing import Any
 
 
+RECENT_TEXT_MOTIF_PATTERNS: tuple[str, ...] = (
+    r"\bdust\b",
+    r"\b(?:bad )?bags?\b",
+    r"\brug(?:s|ged)?\b",
+    r"\brent\b",
+    r"\bportfolios?\b",
+    r"\btrenches\b",
+    r"\bemotional damage\b",
+)
+
+
 @dataclass(slots=True)
 class ContentPlan:
     trend_title: str
@@ -99,6 +110,19 @@ def format_two_block_post(setup: str, punchline: str, max_chars: int) -> str:
 def is_duplicate(plan: ContentPlan, recent_entries: list[dict[str, Any]]) -> bool:
     current_post = normalize_text(plan.post_text)
     current_trend = normalize_text(plan.trend_title)
+
+    # Block the most overused Hamsty vocabulary for a short rolling window. This catches thematic
+    # repetition that SequenceMatcher misses when the wording is technically different.
+    recent_posts = " ".join(
+        normalize_text(str(entry.get("post_text", "")))
+        for entry in recent_entries[-8:]
+    )
+    if any(
+        re.search(pattern, current_post) and re.search(pattern, recent_posts)
+        for pattern in RECENT_TEXT_MOTIF_PATTERNS
+    ):
+        return True
+
     for entry in recent_entries:
         old_post = normalize_text(str(entry.get("post_text", "")))
         old_trend = normalize_text(str(entry.get("trend_title", "")))

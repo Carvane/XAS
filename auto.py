@@ -9,9 +9,9 @@ from pathlib import Path
 
 
 # Wait time before every run, including the first one.
-BASE_INTERVAL_HOURS = 2
-RANDOM_MINUTES_MIN = 1
-RANDOM_MINUTES_MAX = 60
+BASE_INTERVAL_HOURS = 6
+RANDOM_MINUTES_MIN = 30
+RANDOM_MINUTES_MAX = 180
 
 # True makes the scheduler pass --force to start.py so config.json's publication
 # cooldown does not block the interval configured above.

@@ -1,11 +1,16 @@
 {
   "openai": {
     "api_key": "PASTE_OPENAI_API_KEY_HERE",
-    "text_model": "gpt-5.6",
+    "text_model": "gpt-5.6-luna",
     "image_model": "gpt-image-2",
     "conversation_id": "",
     "allowed_domains": [],
-    "blocked_domains": []
+    "blocked_domains": [
+      "nationaltoday.com",
+      "reddit-time-machine.com",
+      "urlebird.com",
+      "xquik.com"
+    ]
   },
   "x": {
     "api_key": "PASTE_X_API_KEY_HERE",
@@ -14,19 +19,30 @@
     "access_token_secret": "PASTE_X_ACCESS_TOKEN_SECRET_HERE"
   },
   "brand": {
-    "coin_name": "YOUR_COIN_NAME",
-    "ticker": "$YOUR_TICKER",
-    "description": "One-sentence description of the memecoin, its mascot and its community joke.",
-    "contract_address": "",
-    "website": "",
-    "x_handle": "@YOUR_X_HANDLE",
-    "tone": "fast, witty, internet-native, self-aware degen humor; never corporate or desperate",
+    "coin_name": "HAMSTY",
+    "ticker": "$HAMSTY",
+    "description": "Hamsty is the hooded Solana mascot behind XAA, an open-source AI agent that follows internet culture, creates original memes and posts them on X. Hamsty is deadpan, resourceful and visually recognizable. He can appear in crypto, technology and everyday internet situations without every joke being about losing money.",
+    "contract_address": "5UppXM3s8wLeij5aALxKrnLk7GxVxyF8FF1NBuCtpump",
+    "website": "https://www.hamsty.pro/",
+    "x_handle": "@hamsty",
+    "tone": "dry, concise and specific English internet humor; instantly understandable and human-written; rotate between deadpan, absurd, situational and self-aware jokes; use crypto language only when natural; avoid repeating broke-degen vocabulary or explaining the joke",
     "call_to_action": "",
     "forbidden_topics": [
-      "death and tragedy",
-      "war",
+      "financial return promises or guaranteed profits",
+      "fake partnerships or celebrity endorsements",
+      "fake scarcity or misleading claims",
+      "death, tragedy and war",
       "politics",
-      "financial return promises"
+      "corporate motivational language",
+      "repeating the same five-dollar wallet joke",
+      "generic AI-slop crypto imagery",
+      "obscure trends that require explanation",
+      "Reddit-only trends or deleted and removed source posts",
+      "calendar holidays without strong independent viral evidence",
+      "overusing dust, bad bags, rugs, rent, portfolios, trenches or emotional damage",
+      "repeated openings about the internet or the timeline",
+      "repeated beige apartments, receipts, paper bags and dirty rooms",
+      "completely unrelated topics such as football unless they are part of a major internet trend"
     ]
   },
   "generation": {
@@ -36,20 +52,21 @@
     "timezone": "Europe/Warsaw",
     "post_language": "English",
     "max_post_chars": 260,
-    "trend_window_hours": 72,
+    "trend_window_hours": 36,
     "trend_sources": [
-      "TikTok and TikTok trend reporting",
-      "X",
-      "Reddit",
-      "YouTube",
+      "TikTok Creative Center and current TikTok trend reporting",
+      "X Explore and current public X trend reporting",
       "Google Trends",
-      "current meme and culture reporting",
-      "crypto culture"
+      "YouTube trending and current creator reporting",
+      "reputable current news and entertainment reporting",
+      "Know Your Meme only for context after independent verification",
+      "Reddit only as secondary confirmation, never as the sole source",
+      "Solana and crypto culture"
     ],
     "image_size": "1536x1024",
     "image_quality": "medium",
     "max_upload_mb": 4.8,
-    "duplicate_lookback": 30,
+    "duplicate_lookback": 15,
     "generation_attempts": 3
   },
   "publishing": {

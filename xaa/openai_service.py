@@ -90,12 +90,22 @@ ANTI-AI-SLOP ART DIRECTION — mandatory:
   readable element for the joke. The scene and character action should communicate the meme.
 - Preserve small photographic imperfections. The final result should look intentionally edited by
   a skilled meme creator, slightly raw and believable—not polished into commercial concept art.
+- Use the existing conversation context to avoid visual motifs used in recent generations.
+- Do not default to a dirty beige apartment, scattered receipts, paper bags, old desks, dim rooms
+  or the same centered three-quarter pose. These elements may appear occasionally, but never as
+  the automatic visual language of every meme.
+- Rotate clearly different setting categories: street, supermarket, public transport, office,
+  gym, parking lot, formal event, outdoor location, clean studio or product-photo setup.
+- Rotate camera treatments when appropriate: direct-flash snapshot, CCTV frame, disposable camera,
+  overhead shot, close-up, telephoto crop and wide environmental photograph.
+- Vary the character's scale, position and body pose while preserving the locked identity, face,
+  outfit, proportions and original mixed-collage appearance.
 """.strip()
 
 
 # X caption format: two text blocks separated by exactly one blank line.
 POST_STYLE_INSTRUCTIONS = """
-X POST STYLE AND LAYOUT — mandatory:
+X POST STYLE AND LAYOUT - mandatory:
 - Return the caption as exactly two compact text blocks: `post_setup` and `post_punchline`.
 - Each block should normally be one short line; a maximum of two short lines is allowed only when
   the joke genuinely benefits from it. Do not put an empty line inside either JSON field.
@@ -103,10 +113,20 @@ X POST STYLE AND LAYOUT — mandatory:
   final post reads as a clean setup, blank line, then a dry payoff.
 - Keep the visual shape sparse and left-aligned: no heading, list, bullets, labels, Markdown,
   decorative separators or paragraph before/after the two blocks.
+- Both blocks must be instantly understandable without reading the source article or knowing the
+  exact trend. Do not merely announce that "the internet" or "the timeline" is discussing it.
+- Prefer a relatable situation, direct observation, POV, short dialogue or specific Solana/crypto
+  behavior. Vary the point of view, sentence shape and joke mechanism between generations.
+- Avoid the repeated formula "trend report + Hamsty lost money". Do not overuse dust, bad bags,
+  rugs, rent, portfolios, trenches or emotional damage.
+- In roughly three out of five posts, include exactly one natural discovery anchor selected from
+  Solana, $HAMSTY, memecoin, AI agent or open source. Never force multiple anchors into one post.
+- A natural question or light call to action is allowed in at most one out of five posts.
+- Use zero or one relevant hashtag only when it reads naturally. Never use #fyp, #viral or hashtag
+  stuffing. Do not add URLs, financial promises, price predictions or desperate promotion.
 - Use concise, natural English internet voice, usually sentence-case with a lowercase opening when
-  natural. Preserve required capitalization for names and acronyms. Use minimal punctuation.
-- Do not add hashtags, URLs, ticker promotion, a call to action, sign-off or emoji clutter. At most
-  one emoji is allowed only when it is essential to the punchline.
+  natural. Preserve required capitalization for names and acronyms. Use minimal punctuation and at
+  most one emoji only when it is essential to the punchline.
 - Treat any supplied style samples only as a reference for spacing, line length and two-block
   silhouette. Never copy their wording, subject matter, setup, punchline or factual claims.
 """.strip()
@@ -137,7 +157,7 @@ class OpenAIService:
     def generate_content(
         self,
         now: datetime,
-        recent_entries: list[dict[str, Any]],
+        _recent_entries: list[dict[str, Any]],
         rejected_trends: list[str],
     ) -> ContentPlan:
         cfg = self.config
@@ -150,13 +170,8 @@ class OpenAIService:
         elif cfg.openai.blocked_domains:
             web_tool["filters"] = {"blocked_domains": cfg.openai.blocked_domains[:100]}
 
-        history_summary = [
-            {
-                "trend_title": entry.get("trend_title", ""),
-                "post_text": entry.get("post_text", ""),
-            }
-            for entry in recent_entries[-cfg.generation.duplicate_lookback :]
-        ]
+        # The Conversation already preserves earlier generations. Local history is intentionally
+        # not copied into the prompt again. It remains in use by core.is_duplicate().
         brand = cfg.brand
         generation = cfg.generation
         sources = generation.trend_sources or [
@@ -170,11 +185,22 @@ class OpenAIService:
         prompt = f"""
 Current local date and time: {now.isoformat()}
 
-Search the live web before answering. Find ONE genuinely current, broadly recognizable,
-fast-growing internet trend from approximately the last {generation.trend_window_hours} hours.
-Prioritize: {', '.join(sources)}. It may come from crypto culture, TikTok, memes, gaming,
-creator culture, consumer tech, or adjacent internet culture. Do not force a technical crypto
-story if a more naturally memeable adjacent trend is stronger.
+Search the live web before answering. Find ONE genuinely current and broadly recognizable trend
+from approximately the last {generation.trend_window_hours} hours. Prioritize:
+{', '.join(sources)}.
+
+A candidate qualifies only when:
+- there is recent evidence from at least two independent domains;
+- at least one source is not Reddit, Wikipedia, Know Your Meme, a calendar site or an aggregator;
+- the evidence is not based on a deleted or removed post;
+- an English-speaking internet or Solana/crypto audience can understand the connection quickly;
+- the final joke still works for someone who did not see the original trend.
+
+Reddit and Know Your Meme may provide secondary context, but neither may be the sole evidence that
+something is currently viral. Prefer relevance, recency and meme potential over a large source
+count. If no candidate meets the standard, use a current recognizable Solana/crypto behavior and
+do not falsely describe it as viral. Do not force a technical crypto story if a more naturally
+memeable adjacent trend is stronger.
 
 Brand:
 - Coin name: {brand.coin_name}
@@ -187,8 +213,6 @@ Brand:
 - Optional CTA: {brand.call_to_action or 'none'}
 - Forbidden topics: {', '.join(brand.forbidden_topics) or 'none beyond the rules below'}
 
-Previously published material to avoid repeating:
-{json.dumps(history_summary, ensure_ascii=False)}
 Rejected as too similar during this run: {json.dumps(rejected_trends, ensure_ascii=False)}
 
 Return:
@@ -207,6 +231,8 @@ Return:
 Quality and safety rules:
 - The post must work as a joke even for someone who is not a developer.
 - Sound like a sharp human social account, not corporate copy and not generic AI prose.
+- Use the Conversation history to avoid repeating recent subjects, punchline structures, phrases,
+  locations, props, poses and camera treatments.
 - No financial-return promises, fake scarcity, fabricated partnership/endorsement, fake quote,
   invented statistic, impersonation, or misleading claim about the trend.
 - Do not exploit death, disaster, war, illness, private individuals, or breaking tragedy.
@@ -339,4 +365,4 @@ def _extract_sources(response: Any) -> list[dict[str, str]]:
                 walk(child, inside_web_call)
 
     walk(raw)
-    return [{"url": url, "title": title} for url, title in found.items()]
+    return [{"url": url, "title": title} for url, title in list(found.items())[:20]]

@@ -12,26 +12,50 @@ changing only the pose, placement, lighting, shadows, and scene interaction requ
 
 ## Highlights
 
-- Live trend research through OpenAI Responses API web search.
-- Persistent OpenAI conversation context through `conversation_id`.
+- Live trend research through OpenAI Responses API web search with `gpt-5.6-luna` recommended for
+  efficient recurring runs.
+- Persistent OpenAI conversation context through `conversation_id` without copying the same local
+  history into every prompt.
+- Stronger trend qualification based on recent evidence from at least two independent domains.
+- Reddit and Know Your Meme are treated as secondary context, not sole proof of virality.
 - Structured caption generation with exactly one blank line between setup and punchline.
 - Original landscape meme generation with `gpt-image-2` image editing.
 - Strict character-identity lock for `logo.png`.
 - Anti-AI-slop art direction: believable found-photo aesthetics, simple visual jokes, restrained
-  grading, realistic imperfections, and no generic neon crypto spectacle.
+  grading, realistic imperfections, varied locations and camera treatments, and no generic neon
+  crypto spectacle.
 - Automatic image conversion and compression for X uploads.
 - Automatic image upload, alt text, and post publishing through Tweepy.
-- Duplicate-topic detection, publication cooldown, process locking, and local run history.
+- Duplicate-topic and repeated-motif detection, publication cooldown, process locking, and local
+  run history.
+- Web source metadata capped at 20 entries per generation to keep output records compact.
 - Safe `--check` and `--dry-run` modes.
+
+## What's new in v1.2.0
+
+- Recommended text model changed to `gpt-5.6-luna` for lower-cost recurring generation.
+- OpenAI Conversation remains enabled, while `history.json` is no longer manually duplicated in
+  each model prompt.
+- Trend selection now requires stronger and more recent independent evidence.
+- Captions rotate joke structures and naturally include a discovery anchor such as `Solana`,
+  `$HAMSTY`, `memecoin`, `AI agent`, or `open source` in some posts.
+- Recent overused themes such as dust, bad bags, rugs, rent, portfolios, trenches, and emotional
+  damage are temporarily rejected by the local duplicate checker.
+- Image prompts rotate locations, framing, camera style, character scale, and pose while preserving
+  the exact character identity from `logo.png`.
+- The default scheduler now waits 6 hours plus 30 to 180 random minutes and respects the cooldown
+  configured in `config.json`.
 
 ## How it works
 
 1. XAA searches the live web for one recent, broadly recognizable trend.
-2. The text model connects that trend to the configured brand without fabricating claims.
-3. It returns a short English setup and punchline plus an image brief and alt text.
-4. XAA edits the supplied character reference into an original meme scene.
-5. The final image is compressed to JPEG and saved with the generation metadata.
-6. In publish mode, Tweepy uploads the media and creates the X post.
+2. It checks for recent evidence from multiple independent sources and rejects weak or obscure
+   candidates.
+3. The text model connects the selected trend to the configured brand without fabricating claims.
+4. It returns a short English setup and punchline plus an image brief and alt text.
+5. XAA edits the supplied character reference into an original meme scene.
+6. The final image is compressed to JPEG and saved with the generation metadata.
+7. In publish mode, Tweepy uploads the media and creates the X post.
 
 XAA performs one generation and publication cycle per `start.py` invocation. The optional
 `auto.py` scheduler can run that cycle repeatedly after a fixed delay plus a randomized number of
@@ -86,6 +110,15 @@ Next:
 
 On Windows, `py install.py` and `py start.py ...` work when the Python launcher is installed.
 
+For efficient recurring text generation, the recommended model setting is:
+
+```json
+"text_model": "gpt-5.6-luna"
+```
+
+Leave `conversation_id` empty to let XAA create and save one automatically, or keep an existing ID
+to continue the established agent context.
+
 For the full credential, configuration, and troubleshooting guide, see
 [docs/SETUP.md](docs/SETUP.md).
 
@@ -118,9 +151,11 @@ short setup
 dry payoff
 ```
 
-XAA avoids headings, hashtags, URLs, promotional sign-offs, ticker spam, and emoji clutter. The
-sample captions used while designing this format influenced only its spacing and silhouette; their
-wording and subject matter are not embedded in the program.
+XAA avoids headings, URLs, promotional sign-offs, ticker spam, and emoji clutter. It may use zero
+or one relevant hashtag when it reads naturally. It also rotates sentence shape, point of view, and
+joke mechanism instead of repeatedly using the same trend-report formula. The sample captions used
+while designing this format influenced only its spacing and silhouette; their wording and subject
+matter are not embedded in the program.
 
 ## Commands
 
@@ -144,14 +179,15 @@ wording and subject matter are not embedded in the program.
 schedule near the top of the file:
 
 ```python
-BASE_INTERVAL_HOURS = 2
-RANDOM_MINUTES_MIN = 1
-RANDOM_MINUTES_MAX = 60
-BYPASS_XAA_COOLDOWN = True
+BASE_INTERVAL_HOURS = 6
+RANDOM_MINUTES_MIN = 30
+RANDOM_MINUTES_MAX = 180
+BYPASS_XAA_COOLDOWN = False
 ```
 
-With the example above, each cycle waits for 2 hours plus a random delay between 1 and 60 minutes.
-The first cycle also waits, so starting `auto.py` does not publish immediately.
+With the recommended settings above, each cycle waits for 6 hours plus a random delay between 30
+and 180 minutes. The average interval is 7 hours and 45 minutes. The first cycle also waits, so
+starting `auto.py` does not publish immediately.
 
 The scheduler works as follows:
 
@@ -160,9 +196,9 @@ The scheduler works as follows:
 3. Run `start.py` and wait until generation and publication finish.
 4. Select a new random delay and repeat the cycle.
 
-When `BYPASS_XAA_COOLDOWN` is `True`, `auto.py` runs `start.py --force`. This makes the scheduler's
-interval authoritative and prevents `publishing.min_hours_between_posts` in `config.json` from
-blocking the planned run. Set it to `False` if the normal XAA cooldown should remain active.
+Keep `BYPASS_XAA_COOLDOWN` set to `False` for normal unattended operation. The scheduler then
+respects `publishing.min_hours_between_posts` from `config.json`. Setting it to `True` makes
+`auto.py` run `start.py --force` and should be used only as an intentional temporary override.
 
 Start the scheduler in the foreground with:
 
@@ -225,7 +261,8 @@ output/YYYYMMDD_HHMMSS_microseconds/
 
 `content.json` records the selected trend, sources returned by web search, caption, image brief,
 alt text, conversation ID, and publication status. `history.json` is used for duplicate detection
-and cooldown checks.
+and cooldown checks. It is not copied into the OpenAI prompt because Conversation already preserves
+the model context. The local file remains necessary for deterministic cooldown and duplicate checks.
 
 ## Security
 
@@ -246,6 +283,7 @@ pull request.
 
 - [OpenAI web search](https://developers.openai.com/api/docs/guides/tools-web-search)
 - [OpenAI conversation state](https://developers.openai.com/api/docs/guides/conversation-state)
+- [GPT-5.6 Luna model](https://developers.openai.com/api/docs/models/gpt-5.6-luna)
 - [OpenAI image generation and editing](https://developers.openai.com/api/docs/guides/image-generation)
 - [GPT Image 2 model](https://developers.openai.com/api/docs/models/gpt-image-2)
 - [Tweepy documentation](https://docs.tweepy.org/)
